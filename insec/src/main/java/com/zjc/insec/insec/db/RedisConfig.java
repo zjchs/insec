@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisPool;
 
-@Component
+
 @Configuration
 public class RedisConfig {
 

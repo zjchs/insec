@@ -6,9 +6,12 @@
             <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%highlight{%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %M - %msg%xEx%n}{FATAL=Bright Red, ERROR=Bright Magenta, WARN=Bright Yellow, INFO=Bright Green, DEBUG=Bright Cyan, TRACE=Bright White}"/>
         </Console>
-        <RollingFile name="RollingFile" fileName="E:\\logs\add.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
-            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %l %M - %msg%xEx%n"/>
+        <RollingFile name="RollingFile" fileName="E:\\add.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter  level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %M - %msg%xEx%n"/>
             <SizeBasedTriggeringPolicy size="50MB"/>
         </RollingFile>
         <File name="file" fileName="E:\\logs\error.log" append="true" >

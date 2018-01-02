@@ -5,6 +5,7 @@ import com.zjc.insec.insec.entity.paper;
 import com.zjc.insec.insec.entity.person;
 import com.zjc.insec.insec.executorCoreThread.InsecRunnable;
 import com.zjc.insec.insec.http.HttpClientUntil;
+import com.zjc.insec.insec.http.UrlProxy;
 import com.zjc.insec.insec.until.InsecQueue;
 import com.zjc.insec.insec.until.ParseUntil;
 import com.zjc.insec.insec.until.StreamUntil;
@@ -35,6 +36,8 @@ import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -46,15 +49,30 @@ public class InsecCore {
     @Autowired
     public InsecQueue insecQueue;
 
+    @Autowired
+    public UrlProxy urlProxy;
 
     @Autowired
     public CloseableHttpClient closeableHttpClient;
 
 
     public void start(){
-        Executor executor= Executors.newFixedThreadPool(20);
-
-            executor.execute(new InsecRunnable(closeableHttpClient));
-
+        Executor executor= Executors.newFixedThreadPool(10);
+            int i=10;
+            List<String> url=urlProxy.getUrls();
+            List<Integer> port=urlProxy.getPorts();
+//                for(;i>0;i--){
+//                    executor.execute(new InsecRunnable(closeableHttpClient,url.get(i),port.get(i)));
+//                    if(i==1){
+//                        i=10;
+//                        try{
+//                            Thread.sleep(1000);
+//                        }catch (Exception e){
+//                            System.out.println(e.toString());
+//                        }
+//                        System.out.println("ok");
+//                    }
+//                }
+        System.out.println(url.get(10)+":"+port.get(10));
     }
 }

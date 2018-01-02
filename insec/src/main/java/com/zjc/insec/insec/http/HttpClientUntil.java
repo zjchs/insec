@@ -20,10 +20,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
@@ -31,13 +30,18 @@ import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by zjc on 2017/12/28.
  */
-@Component
 @Configuration
 public class HttpClientUntil {
+
+    @Value("${urlproxy.urls}")
+    public String urls;
 
     @Bean
     public PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(){
@@ -100,7 +104,27 @@ public class HttpClientUntil {
         return  closeableHttpClient;
     }
 
-    public static void config(HttpRequestBase httpRequestBase){
+    @Bean
+    public UrlProxy getUrlProxy(){
+        String[] proxyurls=urls.split(",");
+        String url;
+        int port;
+        List<String> u=new ArrayList<>();
+        List<Integer> p=new ArrayList<>();
+        List<HashMap<String,Integer>> proxy=new ArrayList<>();
+        for(String proxyurl:proxyurls){
+            url=proxyurl.split(":")[0];
+            port=Integer.parseInt(proxyurl.split(":")[1]);
+            u.add(url);
+            p.add(port);
+        }
+        UrlProxy urlProxy=new UrlProxy();
+        urlProxy.setPorts(p);
+        urlProxy.setUrls(u);
+        return urlProxy;
+    }
+
+    public static void config(HttpRequestBase httpRequestBase,String url,int port){
         httpRequestBase.setHeader("User-Agent","Mozilla/5.0");
         httpRequestBase.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         httpRequestBase.setHeader("Accept-Language","zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");//"en-US,en;q=0.5");  
@@ -110,8 +134,9 @@ public class HttpClientUntil {
                 .setConnectionRequestTimeout(3000)
                 .setConnectTimeout(3000)
                 .setSocketTimeout(3000)
-                .setProxy(new HttpHost("203.174.112.13",3128))
+                .setProxy(new HttpHost(url,port))
                 .build();
         httpRequestBase.setConfig(requestConfig);
     }
+
 }

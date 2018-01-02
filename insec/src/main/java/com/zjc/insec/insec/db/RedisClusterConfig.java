@@ -12,7 +12,6 @@ import redis.clients.jedis.JedisCluster;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
 @Configuration
 public class RedisClusterConfig {
 

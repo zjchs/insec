@@ -17,17 +17,23 @@ public class InsecRunnable implements Runnable {
 
     public CloseableHttpClient closeableHttpClient;
 
+    public String url;
+
+    public int port;
+
     Logger logger= LogManager.getLogger(InsecRunnable.class);
 
-    public InsecRunnable(CloseableHttpClient closeableHttpClient){
+    public InsecRunnable(CloseableHttpClient closeableHttpClient,String url,int port){
         this.closeableHttpClient=closeableHttpClient;
+        this.url=url;
+        this.port=port;
     }
 
     @Override
     public void run() {
 
         HttpGet httpGet=new HttpGet("https://www.zhihu.com/people/ivan-39-18/activities");
-        HttpClientUntil.config(httpGet);
+        HttpClientUntil.config(httpGet,this.url,this.port);
         try{
             long start=System.currentTimeMillis();
             CloseableHttpResponse closeableHttpResponse=closeableHttpClient.execute(httpGet);
@@ -37,6 +43,7 @@ public class InsecRunnable implements Runnable {
                 String content = StreamUntil.steamToStr(httpEntity.getContent());
                 person person = ParseUntil.parseByZH(content);
                 closeableHttpResponse.close();
+                System.out.println(person.getUrl());
                 httpGet.setURI(new URI(person.getUrl()));
                 CloseableHttpResponse closeableHttpResponse1 = closeableHttpClient.execute(httpGet);
                 HttpEntity httpEntity1 = closeableHttpResponse1.getEntity();
@@ -57,6 +64,12 @@ public class InsecRunnable implements Runnable {
             for(int i=0;i<e.getStackTrace().length;i++){
                  logger.error(e.getStackTrace()[i]);
             }
+        }finally {
+//            try{
+//                Thread.sleep(500);
+//            }catch (Exception e){
+//                System.out.println(e.toString());
+//            }
         }
 
     }
