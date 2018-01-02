@@ -1,0 +1,28 @@
+package com.zjc.insec.insec.db;
+
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import redis.clients.jedis.JedisPool;
+
+@Component
+@Configuration
+public class RedisConfig {
+
+    @Bean
+    public JedisPool getJdedisPool(){
+       return new JedisPool(genericObjectPoolConfig(),"127.0.0.1",6379);
+
+    }
+
+    @Bean
+    public GenericObjectPoolConfig genericObjectPoolConfig(){
+        GenericObjectPoolConfig genericObjectPoolConfig=new GenericObjectPoolConfig();
+        genericObjectPoolConfig.setMaxIdle(10);
+        genericObjectPoolConfig.setMinIdle(0);
+        genericObjectPoolConfig.setMaxTotal(20);
+        genericObjectPoolConfig.setMaxWaitMillis(3000);
+        return genericObjectPoolConfig;
+    }
+}
