@@ -38,9 +38,49 @@ public class person implements Serializable{
     获得赞同
      */
     private String approve;
+
+    /*
+    关注者们url
+     */
+    private List<String> focusUrls;
+
+    /*
+    粉丝的数量
+     */
+    private String  fanNums;
+
+    /*
+    关注列表url
+     */
+    private String focusUrl;
+
     /*
     setter/getter
      */
+
+    public void setFanNums(String fanNums) {
+        this.fanNums = fanNums;
+    }
+
+    public String getFanNums() {
+        return fanNums;
+    }
+
+    public void setFocusUrl(String focusUrl) {
+        this.focusUrl = focusUrl;
+    }
+
+    public String getFocusUrl() {
+        return focusUrl;
+    }
+
+    public void setFocusUrls(List<String> focusUrls) {
+        this.focusUrls = focusUrls;
+    }
+
+    public List<String> getFocusUrls() {
+        return focusUrls;
+    }
 
     public void setName(String name) {
         this.name = name;

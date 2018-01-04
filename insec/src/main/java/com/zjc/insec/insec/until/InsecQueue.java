@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by zjc on 2017/12/29.
  */
-@Component
 public class InsecQueue {
 
     private ConcurrentLinkedQueue concurrentLinkedQueue=new ConcurrentLinkedQueue();

@@ -26,28 +26,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-
-import javax.net.ssl.SSLHandshakeException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.net.ConnectException;
-import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * Created by zjc on 2017/12/29.
  */
 @Component
 public class InsecCore {
-    @Autowired
-    public InsecQueue insecQueue;
 
     @Autowired
     public UrlProxy urlProxy;
@@ -55,14 +44,30 @@ public class InsecCore {
     @Autowired
     public CloseableHttpClient closeableHttpClient;
 
-
     public void start(){
-        Executor executor= Executors.newFixedThreadPool(10);
-            int i=10;
-            List<String> url=urlProxy.getUrls();
-            List<Integer> port=urlProxy.getPorts();
+        InsecQueue executorQueue=new InsecQueue();
+        HashMap<String,String> history=new HashMap<>();
+        executorQueue.push("https://www.zhihu.com/people/ivan-39-18/activities");
+        Executor executor= Executors.newFixedThreadPool(20);
+        int i=0;
+        List<String> urls=urlProxy.getUrls();
+        List<Integer> port=urlProxy.getPorts();
+        while(true){
+            String url=executorQueue.pop();
+            if(url==null){
+                continue;
+            }
+            if(i>19){
+                i=0;
+            }
+                executor.execute(new InsecRunnable(closeableHttpClient, urls.get(i), port.get(i), executorQueue, history, url));
+            i++;
+        }
+//            int i=10;
+//            List<String> url=urlProxy.getUrls();
+//            List<Integer> port=urlProxy.getPorts();
 //                for(;i>0;i--){
-//                    executor.execute(new InsecRunnable(closeableHttpClient,url.get(i),port.get(i)));
+//                    executor.execute(new InsecRunnable(closeableHttpClient,url.get(i),port.get(i),executorQueue,history));
 //                    if(i==1){
 //                        i=10;
 //                        try{
@@ -73,6 +78,5 @@ public class InsecCore {
 //                        System.out.println("ok");
 //                    }
 //                }
-        System.out.println(url.get(10)+":"+port.get(10));
     }
 }
