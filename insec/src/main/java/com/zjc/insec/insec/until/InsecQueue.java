@@ -18,5 +18,8 @@ public class InsecQueue {
     public String pop(){
         return (String) concurrentLinkedQueue.poll();
     }
+    public int getSize(){
+       return concurrentLinkedQueue.size();
+    }
 
 }

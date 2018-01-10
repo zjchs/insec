@@ -85,9 +85,9 @@ public class InsecCore {
         HashMap<String,String> history=new HashMap<>();
         userQueue.push("ivan-39-18");
         Executor executor=Executors.newFixedThreadPool(3);
-        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue));
+        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees));
         executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
-        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,topicQueue));
+        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees));
 
     }
 

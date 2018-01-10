@@ -49,9 +49,9 @@ public class FolloweeRunnable implements Runnable {
                     userQueue.push(followee);
                 }
                 long end = System.currentTimeMillis();
-                logger.info("Followee-urlToken:" + urlToken + "   executeTime:" + (end - start));
+                logger.info("Followee-urlToken:" + urlToken + "   executeTime:" + (end - start)+"  size="+followeeQueue.getSize());
             } catch (Exception e) {
-                userQueue.push(urlToken);
+                followeeQueue.push(urlToken);
                 logger.error("get Followee failed:" + e.toString());
             }
         }

@@ -44,7 +44,7 @@ public class TopicRunnable implements Runnable{
                 long start = System.currentTimeMillis();
                 ParseUntil.parseTopics(closeableHttpClient, urlToken, httpGet);
                 long end = System.currentTimeMillis();
-                logger.info("topic-urlToken:" + urlToken + "   executeTime:" + (end - start));
+                logger.info("topic-urlToken:" + urlToken + "   executeTime:" + (end - start)+topicQueue.getSize());
             } catch (Exception e) {
                 topicQueue.push(urlToken);
                 logger.error("add Topic failed:" + e.toString());

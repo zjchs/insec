@@ -20,12 +20,15 @@ public class UserRunnable implements Runnable{
 
     public InsecQueue topicQueue;
 
+    public InsecQueue followeeQueue;
+
     public static Logger logger= LogManager.getLogger(UserRunnable.class);
 
-    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue){
+    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue){
         this.closeableHttpClient=closeableHttpClient;
         this.userQueue=userQueue;
         this.topicQueue=topicQueue;
+        this.followeeQueue=followeeQueue;
     }
     @Override
     public void run() {
@@ -43,8 +46,9 @@ public class UserRunnable implements Runnable{
                 long start = System.currentTimeMillis();
                 ParseUntil.parseUser(closeableHttpClient, urlToken, httpGet);
                 topicQueue.push(urlToken);
+                followeeQueue.push(urlToken);
                 long end = System.currentTimeMillis();
-                logger.info("User-urlToken:" + urlToken + "   executeTime:" + (end - start));
+                logger.info("User-urlToken:" + urlToken + "   executeTime:" + (end - start)+" size="+userQueue.getSize());
             } catch (Exception e) {
                 userQueue.push(urlToken);
                 logger.error("get User failed:" + e.toString());
