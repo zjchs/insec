@@ -1,16 +1,19 @@
 package com.zjc.insec.insec.until;
 
-import com.zjc.insec.insec.entity.paper;
-import com.zjc.insec.insec.entity.person;
+import com.google.gson.Gson;
+import com.zjc.insec.insec.entity.article;
+import com.zjc.insec.insec.entity.user;
+import com.zjc.insec.insec.exception.TopicException;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,69 +22,126 @@ import java.util.List;
 public class ParseUntil {
     public static Logger logger= LogManager.getLogger(ParseUntil.class);
 
-    public static person parseByZH(String content){
-        long start =System.currentTimeMillis();
-        person person=new person();
-        person.setDate(new Date());
-        Document document=Jsoup.parse(content);
-        Elements elements=document.select("div.ProfileHeader-contentHead");
-        for(Element element :elements){
-            person.setName(element.select("span.ProfileHeader-name").text());
-            person.setLabel(element.select("span.ProfileHeader-headline").text());
-        }
-        elements=document.select("ul.Tabs.ProfileMain-tabs");
-        for(Element element:elements){
-            person.setAnswer(element.select("li[aria-controls=Profile-answers]").select("span.Tabs-meta").text());
-            person.setQuestion(element.select("li[aria-controls=Profile-asks]").select("span.Tabs-meta").text());
-            person.setUrl("https://www.zhihu.com"+element.select("li[aria-controls=Profile-posts]").select("a.Tabs-link").attr("href"));
-        }
-        elements=document.select("a.Button.NumberBoard-item.Button--plain");
-        System.out.println(elements.size());
-        Element element=elements.get(0);//bug
-        person.setFocusUrl("https://www.zhihu.com"+element.attr("href"));
-        element=elements.get(1);
-        person.setFanNums(element.select("strong.NumberBoard-itemValue").text());
-        long end =System.currentTimeMillis();
-        logger.info("parseByZH:"+person.getName()+"   run time:"+(end-start));
-        return  person;
+    public static user parseUser(CloseableHttpClient closeableHttpClient, String urlToken, HttpGet httpGet)throws Exception{
+        long start=System.currentTimeMillis();
+        String userUrl="https://www.zhihu.com/api/v4/members/"+urlToken+"?include=locations%" +
+                "2Cemployments%2Cgender%2Ceducations%2Cbusiness%2Cvoteup_count%2Cthanked_Count%2" +
+                "Cfollower_count%2Cfollowing_count%2Ccover_url%2Cfollowing_topic_count%2Cfollowing_question_" +
+                "count%2Cfollowing_favlists_count%2Cfollowing_columns_count%2Cavatar_hue%2Canswer_count%2Ca" +
+                "rticles_count%2Cpins_count%2Cquestion_count%2Ccolumns_count%2Ccommercial_question_count%2" +
+                "Cfavorite_count%2Cfavorited_count%2Clogs_count%2Cincluded_answers_count%2Cincluded_articles_" +
+                "count%2Cincluded_text%2Cmessage_thread_token%2Caccount_status%2Cis_active%2Cis_bind_phone%2" +
+                "Cis_force_renamed%2Cis_bind_sina%2Cis_privacy_protected%2Csina_weibo_url%2Csina_weibo_name%" +
+                "2Cshow_sina_weibo%2Cis_blocking%2Cis_blocked%2Cis_following%2Cis_followed%2Cis_org_" +
+                "createpin_white_user%2Cmutual_followees_count%2Cvote_to_count%2Cvote_from_count%2Cthank_" +
+                "to_count%2Cthank_from_count%2Cthanked_count%2Cdescription%2Chosted_live_count%2Cparticipated_live_count%2Callow_message%2" +
+                "Cindustry_category%2Corg_name%2Corg_homepage%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics";
+
+        httpGet.setURI(new URI(userUrl));
+        CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
+        HttpEntity httpEntity = closeableHttpResponse.getEntity();
+        String data = StreamUntil.steamToStr(httpEntity.getContent());
+        System.out.println(data);
+        Gson gson=new Gson();
+        user u=gson.fromJson(data,user.class);
+        closeableHttpResponse.close();
+        long end=System.currentTimeMillis();
+        logger.info("get user:"+(end-start));
+        httpGet.releaseConnection();
+        return u;
     }
 
-    public static List<paper> parsePapers(String content){
-        long start =System.currentTimeMillis();
-        List<paper> papers=new ArrayList<>();
-        Document document=Jsoup.parse(content);
-        Elements elements=document.select("div.List-item");
-        if(elements.size()!=0) {
-            for (Element element : elements) {
-                paper paper = new paper();
-                paper.setTitile(element.select("h2.ContentItem-title").select("a").text());
-                paper.setUrl(element.select("h2.ContentItem-title").select("a").attr("href"));
-                if (element.select("div.ArticleItem-extraInfo").select("span.Voters").select("button.Button.Button--plain").size() == 0) {
-                    paper.setNum("还没有人为这篇文章点赞哦！亲！点个赞吧");
-                } else {
-                    paper.setNum(element.select("div.ArticleItem-extraInfo").select("span.Voters").select("button.Button.Button--plain").text());
-                }
-                papers.add(paper);
+    public static List<article> parsePapers(CloseableHttpClient closeableHttpClient, String utlToken, HttpGet httpGet)throws Exception{
+        long start=System.currentTimeMillis();
+        List<article> papers=new ArrayList<>();
+        int pre=0;
+        String next1="a";
+        String next="https://www.zhihu.com/api/v4/members/"+utlToken+"/articles?include=data%5B" +
+                "*%5D.comment_count%2Csuggest_edit%2Cis_normal%2Ccan_comment%2Ccomment_permission%2Cadmin_clos" +
+                "ed_comment%2Ccontent%2Cvoteup_count%2Ccreated%2Cupdated%2Cupvoted_followees%2Cvotin" +
+                "g%2Creview_info%3Bdata%5B*%5D.author.badge%5B%3F(type%3Dbest_answerer)%5D.topics&o" +
+                "ffset="+pre+"&limit="+(pre+20)+"&sort_by=created";
+
+            httpGet.setURI(new URI(next));
+            CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            HttpEntity httpEntity = closeableHttpResponse.getEntity();
+            String data = StreamUntil.steamToStr(httpEntity.getContent());
+            closeableHttpResponse.close();
+            JSONObject jsonObject = JSONObject.fromObject(data);
+            JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
+
+            for (Object jsonObject2 : jsonObject1) {
+                Gson gson=new Gson();
+                article a=(article)gson.fromJson(((JSONObject)jsonObject2).toString(),article.class);
+                a.setUrl_token(utlToken);
+                papers.add(a);
             }
-        }
-        long end =System.currentTimeMillis();
-        logger.info("parsePapers run time:"+(end-start));
+
+        long end=System.currentTimeMillis();
+        logger.info(" get papers"+(end-start));
+        httpGet.releaseConnection();
         return papers;
     }
+    public static List<String> parseTopics(CloseableHttpClient closeableHttpClient,String urlToken,HttpGet httpGet) throws Exception{
+        long start=System.currentTimeMillis();
+        List<String> topics=new ArrayList<>();
+        int pre=0;
+        String next1="a";
+        String next="https://www.zhihu.com/api/v4/members/" +urlToken+"/"+
+                "following-topic-contributions?include=data%5B*%5D.topic.introduction&offset="+pre+"&limit="+(pre+20);
 
-    public static List<String> parseFocusUrls(String content){
-        long start =System.currentTimeMillis();
-        List<String> fouckUrls=new ArrayList<>();
-        Document document=Jsoup.parse(content);
-        Elements elements=document.select("div.UserItem-title");
-        if(elements.size()>0){
-            for(Element element:elements){
-                fouckUrls.add("https://www.zhihu.com"+element.select("a.UserLink-link").attr("href")+"/activities");
+        while(next1!=null) {
+            httpGet.setURI(new URI(next));
+            CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            HttpEntity httpEntity = closeableHttpResponse.getEntity();
+            String data = StreamUntil.steamToStr(httpEntity.getContent());
+            closeableHttpResponse.close();
+            JSONObject jsonObject = JSONObject.fromObject(data);
+            JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
+            if(jsonObject1.size()==0){
+                break;
             }
+            for (Object jsonObject2 : jsonObject1) {
+                JSONObject jsonObject3=(JSONObject) ((JSONObject) jsonObject2).get("topic");
+                topics.add(jsonObject3.get("name").toString());
+            }
+            JSONObject jsonObject3 = (JSONObject) jsonObject.get("paging");
+            next1 = jsonObject3.get("next").toString();
+            pre+=20;
+            next="https://www.zhihu.com/api/v4/members/" +urlToken+"/"+
+                    "following-topic-contributions?include=data%5B*%5D.topic.introduction&offset="+pre+"&limit="+(pre+20);
+            //Thread.sleep(1000);
         }
-        long end =System.currentTimeMillis();
-        logger.info("parseFocusUrls run time:"+(end-start));
-        return  fouckUrls;
+        long end=System.currentTimeMillis();
+        logger.info("get topics"+(end-start));
+        httpGet.releaseConnection();
+        return topics;
+    }
+    public static List<String> parseFollowees(CloseableHttpClient closeableHttpClient,String utlToken,HttpGet httpGet) throws Exception{
+        long start=System.currentTimeMillis();
+        List<String> folloeees=new ArrayList<>();
+        int pre=0;
+        String next1="a";
+        String next="https://www.zhihu.com/api/v4/members/"+utlToken+"/followees?include=data%5B*%5D.answer_count%2Carticles_count%" +
+                "2Cgender%2Cfollower_count%2Cis_followed%2Cis_following%2Cbadge%5B%3F" +
+                "(type%3Dbest_answerer)%5D.topics&offset="+pre+"&limit="+(pre+20);
+        int i=0;
+            httpGet.setURI(new URI(next));
+            CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            HttpEntity httpEntity = closeableHttpResponse.getEntity();
+            String data = StreamUntil.steamToStr(httpEntity.getContent());
+            closeableHttpResponse.close();
+            JSONObject jsonObject = JSONObject.fromObject(data);
+            JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
+
+            for (Object jsonObject2 : jsonObject1) {
+                folloeees.add(((JSONObject) jsonObject2).get("url_token").toString());
+            }
+
+        long end=System.currentTimeMillis();
+        logger.info("get followees"+(end-start));
+        httpGet.releaseConnection();
+        return folloeees;
     }
 
 }

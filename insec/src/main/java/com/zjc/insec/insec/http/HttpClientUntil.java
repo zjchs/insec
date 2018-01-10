@@ -118,10 +118,12 @@ public class HttpClientUntil {
             u.add(url);
             p.add(port);
         }
-        UrlProxy urlProxy=new UrlProxy();
-        urlProxy.setPorts(p);
-        urlProxy.setUrls(u);
-        return urlProxy;
+        //UrlProxy urlProxy=new UrlProxy();
+        //urlProxy.setPorts(p);
+        //urlProxy.setUrls(u);
+        UrlProxy.ports=p;
+        UrlProxy.urls=u;
+        return null;
     }
 
     public static void config(HttpRequestBase httpRequestBase,String url,int port){
@@ -129,6 +131,8 @@ public class HttpClientUntil {
         httpRequestBase.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         httpRequestBase.setHeader("Accept-Language","zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3");//"en-US,en;q=0.5");  
         httpRequestBase.setHeader("Accept-Charset","ISO-8859-1,utf-8,gbk,gb2312;q=0.7,*;q=0.7");
+        httpRequestBase.setHeader("accept","application/json");
+        httpRequestBase.setHeader("authorization","oauth c3cef7c66a1843f8b3a9e6a1e3160e20");
 
         RequestConfig requestConfig= RequestConfig.custom()
                 .setConnectionRequestTimeout(3000)

@@ -10,24 +10,19 @@ import java.util.List;
  */
 
 public class UrlProxy {
-     private List<String> urls;
-     private List<Integer> ports;
+     public static List<String> urls;
+     public static List<Integer> ports;
+     public static int i=0;
     public UrlProxy(){
 
     }
-    public void setUrls(List<String> urls) {
-        this.urls = urls;
-    }
 
-    public List<String> getUrls() {
-        return urls;
-    }
-
-    public void setPorts(List<Integer> ports) {
-        this.ports = ports;
-    }
-
-    public List<Integer> getPorts() {
-        return ports;
+    public synchronized static String getProxy(){
+        if (i > (urls.size() - 1)) {
+            i = 0;
+        }
+        String proxy=urls.get(i)+":"+ports.get(i);
+        i++;
+        return proxy;
     }
 }
