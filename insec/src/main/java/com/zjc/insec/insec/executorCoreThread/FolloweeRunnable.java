@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by zjc on 2018/1/10.
@@ -22,12 +23,15 @@ public class FolloweeRunnable implements Runnable {
 
     public InsecQueue userQueue;
 
+    public Set history;
+
     public static Logger logger= LogManager.getLogger(FolloweeRunnable.class);
 
-    public FolloweeRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue followeeQueue){
+    public FolloweeRunnable(CloseableHttpClient closeableHttpClient, InsecQueue userQueue, InsecQueue followeeQueue, Set history){
         this.closeableHttpClient=closeableHttpClient;
         this.followeeQueue=followeeQueue;
         this.userQueue=userQueue;
+        this.history=history;
     }
 
     @Override
@@ -45,14 +49,20 @@ public class FolloweeRunnable implements Runnable {
             try {
                 long start = System.currentTimeMillis();
                 List<String> followees = ParseUntil.parseFollowees(closeableHttpClient, urlToken, httpGet);
-                for (String followee : followees) {
-                    userQueue.push(followee);
+                if(followees!=null) {
+                    for (String followee :followees) {
+                        if(history.contains(followee)){
+                            continue;
+                        }
+                        userQueue.push(followee);
+                    }
                 }
                 long end = System.currentTimeMillis();
                 logger.info("Followee-urlToken:" + urlToken + "   executeTime:" + (end - start)+"  size="+followeeQueue.getSize());
             } catch (Exception e) {
                 followeeQueue.push(urlToken);
                 logger.error("get Followee failed:" + e.toString());
+
             }
         }
     }

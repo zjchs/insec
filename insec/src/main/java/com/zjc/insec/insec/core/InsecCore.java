@@ -2,24 +2,18 @@ package com.zjc.insec.insec.core;
 
 
 
-import com.zjc.insec.insec.entity.article;
-import com.zjc.insec.insec.entity.user;
-import com.zjc.insec.insec.executorCoreThread.FolloweeRunnable;
-import com.zjc.insec.insec.executorCoreThread.InsecRunnable;
-import com.zjc.insec.insec.executorCoreThread.TopicRunnable;
-import com.zjc.insec.insec.executorCoreThread.UserRunnable;
-import com.zjc.insec.insec.http.HttpClientUntil;
+import com.zjc.insec.insec.executorCoreThread.*;
 import com.zjc.insec.insec.http.UrlProxy;
+import com.zjc.insec.insec.until.InsecFileUntil;
 import com.zjc.insec.insec.until.InsecQueue;
-import com.zjc.insec.insec.until.ParseUntil;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -82,13 +76,13 @@ public class InsecCore {
         InsecQueue userQueue=new InsecQueue();
         InsecQueue topicQueue=new InsecQueue();
         InsecQueue folowees=new InsecQueue();
-        HashMap<String,String> history=new HashMap<>();
-        userQueue.push("ivan-39-18");
-        Executor executor=Executors.newFixedThreadPool(3);
-        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees));
+        Set<String> history=new HashSet();
+        InsecFileUntil.initQueue(userQueue);
+        Executor executor=Executors.newFixedThreadPool(4);
+        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history));
         executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
-        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees));
-
+        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history));
+        executor.execute(new LoadRunnable(userQueue));
     }
 
 }

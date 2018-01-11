@@ -3,7 +3,6 @@
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%highlight{%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %M - %msg%xEx%n}{FATAL=Bright Red, ERROR=Bright Magenta, WARN=Bright Yellow, INFO=Bright Green, DEBUG=Bright Cyan, TRACE=Bright White}"/>
         </Console>
 
@@ -38,6 +37,7 @@
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %M - %msg%xEx%n"/>
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
         </File>
+
     </Appenders>
     <Loggers>
         <logger name="com.zjc.insec.insec.executorCoreThread.UserRunnable" level="info">
@@ -52,11 +52,7 @@
             <appender-ref ref="parseFollowee"/>
         </logger>
 
-        <logger name="com.zjc.insec.insec.until.ParseUntil" level="error">
-            <appender-ref ref="parseFile"/>
-        </logger>
-
-        <root level="warn">
+        <root level="info">
             <appender-ref ref="Console"/>
             <appender-ref ref="file"/>
         </root>

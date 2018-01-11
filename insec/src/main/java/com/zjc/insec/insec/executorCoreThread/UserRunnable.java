@@ -8,6 +8,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Set;
+
 /**
  * Created by zjc on 2018/1/10.
  */
@@ -22,13 +24,16 @@ public class UserRunnable implements Runnable{
 
     public InsecQueue followeeQueue;
 
+    public Set history;
+
     public static Logger logger= LogManager.getLogger(UserRunnable.class);
 
-    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue){
+    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue,Set history){
         this.closeableHttpClient=closeableHttpClient;
         this.userQueue=userQueue;
         this.topicQueue=topicQueue;
         this.followeeQueue=followeeQueue;
+        this.history=history;
     }
     @Override
     public void run() {
@@ -45,8 +50,10 @@ public class UserRunnable implements Runnable{
             try {
                 long start = System.currentTimeMillis();
                 ParseUntil.parseUser(closeableHttpClient, urlToken, httpGet);
+
                 topicQueue.push(urlToken);
                 followeeQueue.push(urlToken);
+                history.add(urlToken);
                 long end = System.currentTimeMillis();
                 logger.info("User-urlToken:" + urlToken + "   executeTime:" + (end - start)+" size="+userQueue.getSize());
             } catch (Exception e) {

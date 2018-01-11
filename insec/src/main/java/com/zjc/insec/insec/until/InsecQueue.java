@@ -21,5 +21,8 @@ public class InsecQueue {
     public int getSize(){
        return concurrentLinkedQueue.size();
     }
+    public Object[] toArray(){
+        return concurrentLinkedQueue.toArray();
+    }
 
 }
