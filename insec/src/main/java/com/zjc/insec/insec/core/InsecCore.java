@@ -80,7 +80,7 @@ public class InsecCore {
         InsecFileUntil.initQueue(userQueue);
         Executor executor=Executors.newFixedThreadPool(4);
         executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history));
-        executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
+       // executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
         executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history));
         executor.execute(new LoadRunnable(userQueue));
     }

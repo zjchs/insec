@@ -24,6 +24,8 @@ public class ParseUntil {
 
     public static user parseUser(CloseableHttpClient closeableHttpClient, String urlToken, HttpGet httpGet)throws Exception{
         long start=System.currentTimeMillis();
+        CloseableHttpResponse closeableHttpResponse=null;
+        user u=null;
         String userUrl="https://www.zhihu.com/api/v4/members/"+urlToken+"?include=locations%" +
                 "2Cemployments%2Cgender%2Ceducations%2Cbusiness%2Cvoteup_count%2Cthanked_Count%2" +
                 "Cfollower_count%2Cfollowing_count%2Ccover_url%2Cfollowing_topic_count%2Cfollowing_question_" +
@@ -36,15 +38,23 @@ public class ParseUntil {
                 "createpin_white_user%2Cmutual_followees_count%2Cvote_to_count%2Cvote_from_count%2Cthank_" +
                 "to_count%2Cthank_from_count%2Cthanked_count%2Cdescription%2Chosted_live_count%2Cparticipated_live_count%2Callow_message%2" +
                 "Cindustry_category%2Corg_name%2Corg_homepage%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics";
-
-        httpGet.setURI(new URI(userUrl));
-        CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
-        HttpEntity httpEntity = closeableHttpResponse.getEntity();
-        String data = StreamUntil.steamToStr(httpEntity.getContent());
-        System.out.println(data);
-        Gson gson=new Gson();
-        user u=gson.fromJson(data,user.class);
-        closeableHttpResponse.close();
+        try {
+            httpGet.setURI(new URI(userUrl));
+            closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            HttpEntity httpEntity = closeableHttpResponse.getEntity();
+            String data = StreamUntil.steamToStr(httpEntity.getContent());
+            System.out.println(data);
+            Gson gson = new Gson();
+            u = gson.fromJson(data, user.class);
+            closeableHttpResponse.close();
+        }catch (Exception e){
+            throw e;
+        }finally {
+            if(closeableHttpResponse!=null){
+                closeableHttpResponse.close();
+            }
+            httpGet.releaseConnection();
+        }
         long end=System.currentTimeMillis();
         logger.info("get user:"+(end-start));
         httpGet.releaseConnection();
@@ -121,16 +131,26 @@ public class ParseUntil {
         long start=System.currentTimeMillis();
         List<String> folloeees=new ArrayList<>();
         int pre=0;
+        CloseableHttpResponse closeableHttpResponse=null;
+        String data=null;
         String next1="a";
         String next="https://www.zhihu.com/api/v4/members/"+utlToken+"/followees?include=data%5B*%5D.answer_count%2Carticles_count%" +
                 "2Cgender%2Cfollower_count%2Cis_followed%2Cis_following%2Cbadge%5B%3F" +
                 "(type%3Dbest_answerer)%5D.topics&offset="+pre+"&limit="+(pre+20);
-        int i=0;
+        try {
+
             httpGet.setURI(new URI(next));
-            CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            closeableHttpResponse = closeableHttpClient.execute(httpGet);
             HttpEntity httpEntity = closeableHttpResponse.getEntity();
-            String data = StreamUntil.steamToStr(httpEntity.getContent());
-            closeableHttpResponse.close();
+            data = StreamUntil.steamToStr(httpEntity.getContent());
+        }catch (Exception e){
+            throw e;
+        }finally {
+            if(closeableHttpResponse!=null){
+                closeableHttpResponse.close();
+            }
+            httpGet.releaseConnection();
+        }
             JSONObject jsonObject = JSONObject.fromObject(data);
             JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
 
@@ -140,7 +160,6 @@ public class ParseUntil {
 
         long end=System.currentTimeMillis();
         logger.info("get followees"+(end-start));
-        httpGet.releaseConnection();
         return folloeees;
     }
 

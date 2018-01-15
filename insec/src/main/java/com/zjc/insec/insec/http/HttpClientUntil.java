@@ -46,8 +46,8 @@ public class HttpClientUntil {
     @Bean
     public PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(){
         PoolingHttpClientConnectionManager cm=new PoolingHttpClientConnectionManager(registryHttpOrHttps());
-        cm.setMaxTotal(50);
-        cm.setDefaultMaxPerRoute(20);
+        cm.setMaxTotal(5);
+        cm.setDefaultMaxPerRoute(10);
         return cm;
     }
     @Bean
