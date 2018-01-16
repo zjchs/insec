@@ -10,6 +10,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.net.URI;
@@ -26,6 +27,7 @@ public class ParseUntil {
         long start=System.currentTimeMillis();
         CloseableHttpResponse closeableHttpResponse=null;
         user u=null;
+        String data=null;
         String userUrl="https://www.zhihu.com/api/v4/members/"+urlToken+"?include=locations%" +
                 "2Cemployments%2Cgender%2Ceducations%2Cbusiness%2Cvoteup_count%2Cthanked_Count%2" +
                 "Cfollower_count%2Cfollowing_count%2Ccover_url%2Cfollowing_topic_count%2Cfollowing_question_" +
@@ -42,7 +44,9 @@ public class ParseUntil {
             httpGet.setURI(new URI(userUrl));
             closeableHttpResponse = closeableHttpClient.execute(httpGet);
             HttpEntity httpEntity = closeableHttpResponse.getEntity();
-            String data = StreamUntil.steamToStr(httpEntity.getContent());
+            if(httpEntity!=null) {
+                 data = StreamUntil.steamToStr(httpEntity.getContent());
+            }
             System.out.println(data);
             Gson gson = new Gson();
             u = gson.fromJson(data, user.class);
@@ -51,13 +55,13 @@ public class ParseUntil {
             throw e;
         }finally {
             if(closeableHttpResponse!=null){
+                EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
             httpGet.releaseConnection();
         }
         long end=System.currentTimeMillis();
         logger.info("get user:"+(end-start));
-        httpGet.releaseConnection();
         return u;
     }
 
@@ -142,11 +146,14 @@ public class ParseUntil {
             httpGet.setURI(new URI(next));
             closeableHttpResponse = closeableHttpClient.execute(httpGet);
             HttpEntity httpEntity = closeableHttpResponse.getEntity();
-            data = StreamUntil.steamToStr(httpEntity.getContent());
+            if(httpEntity!=null) {
+                data = StreamUntil.steamToStr(httpEntity.getContent());
+            }
         }catch (Exception e){
             throw e;
         }finally {
             if(closeableHttpResponse!=null){
+                EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
             httpGet.releaseConnection();

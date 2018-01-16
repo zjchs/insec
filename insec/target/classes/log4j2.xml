@@ -3,7 +3,7 @@
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %M - %msg%xEx%n}{FATAL=Bright Red, ERROR=Bright Magenta, WARN=Bright Yellow, INFO=Bright Green, DEBUG=Bright Cyan, TRACE=Bright White}"/>
+            <PatternLayout pattern="%highlight{%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %M - %msg%xEx%n}{FATAL=Bright Red, ERROR=Bright Magenta, WARN=Bright Orange, INFO=Bright Yellow, DEBUG=Bright Cyan, TRACE=Bright White}"/>
         </Console>
 
         <RollingFile name="parseUser" fileName="E:\\user.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
