@@ -1,5 +1,6 @@
 package com.zjc.insec.insec.executorCoreThread;
 import com.zjc.insec.insec.http.HttpClientUntil;
+import com.zjc.insec.insec.http.HttpProxy;
 import com.zjc.insec.insec.http.UrlProxy;
 import com.zjc.insec.insec.until.InsecQueue;
 import com.zjc.insec.insec.until.ParseUntil;
@@ -26,14 +27,17 @@ public class UserRunnable implements Runnable{
 
     public Set history;
 
+    public HttpProxy httpProxy;
+
     public static Logger logger= LogManager.getLogger(UserRunnable.class);
 
-    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue,Set history){
+    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue,Set history,HttpProxy httpProxy){
         this.closeableHttpClient=closeableHttpClient;
         this.userQueue=userQueue;
         this.topicQueue=topicQueue;
         this.followeeQueue=followeeQueue;
         this.history=history;
+        this.httpProxy=httpProxy;
     }
     @Override
     public void run() {
@@ -42,7 +46,10 @@ public class UserRunnable implements Runnable{
             if(urlToken==null){
                 continue;
             }
-            String proxy=UrlProxy.getProxy();
+            if(history.contains(urlToken)){
+                continue;
+            }
+            String proxy=httpProxy.getProxyUrl();
             String url=proxy.split(":")[0];
             int port=Integer.parseInt(proxy.split(":")[1]);
             HttpGet httpGet = new HttpGet();
@@ -54,6 +61,7 @@ public class UserRunnable implements Runnable{
                 topicQueue.push(urlToken);
                 followeeQueue.push(urlToken);
                 history.add(urlToken);
+                httpProxy.urlQueue.add(proxy);
                 long end = System.currentTimeMillis();
                 logger.info("User-urlToken:" + urlToken + "   executeTime:" + (end - start)+" size="+userQueue.getSize());
             } catch (Exception e) {

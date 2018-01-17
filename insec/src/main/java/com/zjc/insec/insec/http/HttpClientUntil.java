@@ -28,6 +28,8 @@ import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
+import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -46,8 +48,8 @@ public class HttpClientUntil {
     @Bean
     public PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(){
         PoolingHttpClientConnectionManager cm=new PoolingHttpClientConnectionManager(registryHttpOrHttps());
-        cm.setMaxTotal(5);
-        cm.setDefaultMaxPerRoute(2);
+        cm.setMaxTotal(200);
+        cm.setDefaultMaxPerRoute(150);
         return cm;
     }
     @Bean
@@ -71,11 +73,11 @@ public class HttpClientUntil {
         HttpRequestRetryHandler httpRequestRetryHandler=new HttpRequestRetryHandler() {
             @Override
             public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
-                if(i>=5){
+                if(i>=2){
                     return  false;
                 }
                 if(e instanceof NoHttpResponseException){
-                    return true;
+                    return false;
                 }
                 if(e instanceof SSLHandshakeException){
                     return false;
@@ -88,6 +90,9 @@ public class HttpClientUntil {
                 }
                 if(e instanceof ConnectException){
                     return false;
+                }
+                if(e instanceof SocketException){
+                    return  false;
                 }
                 HttpClientContext httpClientContext= HttpClientContext.adapt(httpContext);
                 HttpRequest httpRequest=httpClientContext.getRequest();

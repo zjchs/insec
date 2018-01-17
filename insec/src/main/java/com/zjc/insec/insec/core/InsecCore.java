@@ -3,6 +3,7 @@ package com.zjc.insec.insec.core;
 
 
 import com.zjc.insec.insec.executorCoreThread.*;
+import com.zjc.insec.insec.http.HttpProxy;
 import com.zjc.insec.insec.http.UrlProxy;
 import com.zjc.insec.insec.until.InsecFileUntil;
 import com.zjc.insec.insec.until.InsecQueue;
@@ -27,6 +28,9 @@ public class InsecCore {
 
     @Autowired
     public UrlProxy urlProxy;
+
+    @Autowired
+    public HttpProxy httpProxy;
 
     @Autowired
     public CloseableHttpClient closeableHttpClient;
@@ -79,9 +83,9 @@ public class InsecCore {
         Set<String> history=new HashSet();
         InsecFileUntil.initQueue(userQueue);
         Executor executor=Executors.newFixedThreadPool(4);
-        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history));
+        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history,httpProxy));
        // executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
-        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history));
+        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history,httpProxy));
         executor.execute(new LoadRunnable(userQueue));
     }
 

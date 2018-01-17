@@ -58,7 +58,7 @@ public class ParseUntil {
                 EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
-            httpGet.releaseConnection();
+            httpGet.abort();
         }
         long end=System.currentTimeMillis();
         logger.info("get user:"+(end-start));
@@ -156,7 +156,7 @@ public class ParseUntil {
                 EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
-            httpGet.releaseConnection();
+            httpGet.abort();
         }
             JSONObject jsonObject = JSONObject.fromObject(data);
             JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
