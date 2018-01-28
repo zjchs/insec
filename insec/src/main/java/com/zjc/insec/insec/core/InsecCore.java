@@ -5,7 +5,7 @@ package com.zjc.insec.insec.core;
 import com.zjc.insec.insec.executorCoreThread.*;
 import com.zjc.insec.insec.http.HttpProxy;
 import com.zjc.insec.insec.http.UrlProxy;
-import com.zjc.insec.insec.until.InsecFileUntil;
+import com.zjc.insec.insec.until.InitUntil;
 import com.zjc.insec.insec.until.InsecQueue;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zjc on 2017/12/29.
@@ -80,13 +82,19 @@ public class InsecCore {
         InsecQueue userQueue=new InsecQueue();
         InsecQueue topicQueue=new InsecQueue();
         InsecQueue folowees=new InsecQueue();
-        Set<String> history=new HashSet();
-        InsecFileUntil.initQueue(userQueue);
+        InitUntil.initQueue(userQueue);
+        Set<String> history=InitUntil.loadHistorySet();
         Executor executor=Executors.newFixedThreadPool(4);
-        executor.execute(new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history,httpProxy));
+        ScheduledExecutorService scheduledExecutorService=Executors.newScheduledThreadPool(2);
+        UserRunnable userRunnable= new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history,httpProxy);
+        FolloweeRunnable followeeRunnable=new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history,httpProxy);
+        executor.execute(userRunnable);
        // executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
-        executor.execute(new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history,httpProxy));
+        executor.execute(followeeRunnable);
         executor.execute(new LoadRunnable(userQueue));
+        MonitorRunnable monitorRunnable=new MonitorRunnable(userRunnable,followeeRunnable,executor);
+        scheduledExecutorService.scheduleAtFixedRate(monitorRunnable,1,1, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleWithFixedDelay(new HistoryRunnable(history),5,5,TimeUnit.MINUTES);
     }
 
 }

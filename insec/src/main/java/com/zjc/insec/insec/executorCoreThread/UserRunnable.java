@@ -14,10 +14,9 @@ import java.util.Set;
 /**
  * Created by zjc on 2018/1/10.
  */
-public class UserRunnable implements Runnable{
+public class UserRunnable extends BaseThread{
 
 
-    public CloseableHttpClient closeableHttpClient;
 
     public InsecQueue userQueue;
 
@@ -27,17 +26,15 @@ public class UserRunnable implements Runnable{
 
     public Set history;
 
-    public HttpProxy httpProxy;
 
     public static Logger logger= LogManager.getLogger(UserRunnable.class);
 
     public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue,Set history,HttpProxy httpProxy){
-        this.closeableHttpClient=closeableHttpClient;
+        super(closeableHttpClient,httpProxy);
         this.userQueue=userQueue;
         this.topicQueue=topicQueue;
         this.followeeQueue=followeeQueue;
         this.history=history;
-        this.httpProxy=httpProxy;
     }
     @Override
     public void run() {
@@ -54,10 +51,11 @@ public class UserRunnable implements Runnable{
             int port=Integer.parseInt(proxy.split(":")[1]);
             HttpGet httpGet = new HttpGet();
             HttpClientUntil.config(httpGet,url,port);
+            this.httpget=httpGet;
             try {
                 long start = System.currentTimeMillis();
+                endTime=start;
                 ParseUntil.parseUser(closeableHttpClient, urlToken, httpGet);
-
                 topicQueue.push(urlToken);
                 followeeQueue.push(urlToken);
                 history.add(urlToken);
@@ -65,6 +63,7 @@ public class UserRunnable implements Runnable{
                 long end = System.currentTimeMillis();
                 logger.info("User-urlToken:" + urlToken + "   executeTime:" + (end - start)+" size="+userQueue.getSize());
             } catch (Exception e) {
+                Thread.currentThread().isInterrupted();
                 userQueue.push(urlToken);
                 logger.error("get User failed:" + e.toString());
             }

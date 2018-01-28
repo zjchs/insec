@@ -1,10 +1,10 @@
 package com.zjc.insec.insec.until;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 public class StreamUntil {
     private static Logger logger= LogManager.getLogger("StreamUntil");
@@ -43,16 +43,22 @@ public class StreamUntil {
         return bytes;
     }
     public static Object deserializeByByte(byte[] bytes){
+        if(bytes==null){
+            return null;
+        }
         ObjectInputStream objectInputStream=null;
-        ByteInputStream byteInputStream=null;
+        ByteArrayInputStream byteInputStream=null;
         Object o=null;
         try{
-            byteInputStream=new ByteInputStream(bytes,bytes.length);
+            byteInputStream=new ByteArrayInputStream(bytes);
             objectInputStream=new ObjectInputStream(byteInputStream);
             o=objectInputStream.readObject();
         }catch (Exception e){
             logger.error(e.getStackTrace());
         }
         return o;
+    }
+    public static byte[] serializa(String content){
+        return content==null?null:content.getBytes(Charset.forName("utf-8"));
     }
 }

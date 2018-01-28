@@ -15,8 +15,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class InsecApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext configurableApplicationContext=SpringApplication.run(InsecApplication.class, args);
-		InsecCore insecCore=(InsecCore)configurableApplicationContext.getBean("insecCore");
-		insecCore.start1();
+//		ConfigurableApplicationContext configurableApplicationContext=SpringApplication.run(InsecApplication.class, args);
+//		InsecCore insecCore=(InsecCore)configurableApplicationContext.getBean("insecCore");
+//		insecCore.start1();
+		System.out.println(6==6.0);
 	}
 }

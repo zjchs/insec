@@ -39,6 +39,7 @@ public class ParseUntil {
                 "2Cshow_sina_weibo%2Cis_blocking%2Cis_blocked%2Cis_following%2Cis_followed%2Cis_org_" +
                 "createpin_white_user%2Cmutual_followees_count%2Cvote_to_count%2Cvote_from_count%2Cthank_" +
                 "to_count%2Cthank_from_count%2Cthanked_count%2Cdescription%2Chosted_live_count%2Cparticipated_live_count%2Callow_message%2" +
+
                 "Cindustry_category%2Corg_name%2Corg_homepage%2Cbadge%5B%3F(type%3Dbest_answerer)%5D.topics";
         try {
             httpGet.setURI(new URI(userUrl));
@@ -50,7 +51,7 @@ public class ParseUntil {
             System.out.println(data);
             Gson gson = new Gson();
             u = gson.fromJson(data, user.class);
-            closeableHttpResponse.close();
+          //  closeableHttpResponse.close();
         }catch (Exception e){
             throw e;
         }finally {

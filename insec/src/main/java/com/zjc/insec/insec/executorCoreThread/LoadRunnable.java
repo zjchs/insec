@@ -62,7 +62,7 @@ public class LoadRunnable implements Runnable {
             try {
                 Thread.sleep(2000);
             }catch (Exception e){
-
+                logger.error(e.toString());
             }
         }
     }

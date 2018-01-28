@@ -18,6 +18,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.params.HttpConnectionParamBean;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Value;
@@ -142,7 +143,7 @@ public class HttpClientUntil {
         RequestConfig requestConfig= RequestConfig.custom()
                 .setConnectionRequestTimeout(3000)
                 .setConnectTimeout(3000)
-                .setSocketTimeout(3000)
+                .setSocketTimeout(2000)
                 .setProxy(new HttpHost(url,port))
                 .build();
         httpRequestBase.setConfig(requestConfig);
