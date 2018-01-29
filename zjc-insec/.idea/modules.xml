@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/article-insec/article-insec.iml" filepath="$PROJECT_DIR$/article-insec/article-insec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/insec.iml" filepath="$PROJECT_DIR$/insec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/parent-insec/parent-insec.iml" filepath="$PROJECT_DIR$/parent-insec/parent-insec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-insec/user-insec.iml" filepath="$PROJECT_DIR$/user-insec/user-insec.iml" />
+    </modules>
+  </component>
+</project>

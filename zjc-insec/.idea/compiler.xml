@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="article-insec" />
+        <module name="user-insec" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="article-insec" target="1.8" />
+      <module name="insec" target="1.8" />
+      <module name="kafka" target="1.8" />
+      <module name="parent-insec" target="1.8" />
+      <module name="user-insec" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
