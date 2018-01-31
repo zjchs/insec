@@ -15,7 +15,7 @@
             <SizeBasedTriggeringPolicy size="50MB"/>
         </RollingFile>
 
-        <RollingFile name="parseTopic" fileName="E:\\topic.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+        <RollingFile name="kafkaProducer" fileName="E:\\kafkaProducer.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
             <Filters>
                 <ThresholdFilter  level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -53,8 +53,8 @@
             <appender-ref ref="parseUser"/>
         </logger>
 
-        <logger name="com.zjc.insec.insec.executorCoreThread.TopicRunnable" level="info">
-            <appender-ref ref="parseTopic"/>
+        <logger name="com.zjc.insec.insec.executorCoreThread.KafkaProducerRunnable" level="info">
+            <appender-ref ref="kafkaProducer"/>
         </logger>
 
         <logger name="com.zjc.insec.insec.executorCoreThread.FolloweeRunnable" level="info">

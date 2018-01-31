@@ -15,7 +15,7 @@
             <SizeBasedTriggeringPolicy size="50MB"/>
         </RollingFile>
 
-        <RollingFile name="parseTopic" fileName="E:\\topic.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+        <RollingFile name="articleConsumer" fileName="E:\\articleConsumer.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
             <Filters>
                 <ThresholdFilter  level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -41,15 +41,15 @@
 
     </Appenders>
     <Loggers>
-        <logger name="com.zjc.insec.ExecuteThread.ArticleRunnable" level="info">
+        <logger name="com.zjc.article.ExecuteThread.ArticleRunnable" level="info">
             <appender-ref ref="parseArticle"/>
         </logger>
 
-        <logger name="com.zjc.insec.ExecuteThread.TopicRunnable" level="info">
-            <appender-ref ref="parseTopic"/>
+        <logger name="com.zjc.article.ExecuteThread.KafkaCounsumerRunnable" level="info">
+            <appender-ref ref="articleConsumer"/>
         </logger>
 
-        <logger name="com.zjc.insec.ExecuteThread.MonitorRunnable" level="info">
+        <logger name="com.zjc.article.ExecuteThread.MonitorRunnable" level="info">
             <appender-ref ref="monitor"/>
         </logger>
 

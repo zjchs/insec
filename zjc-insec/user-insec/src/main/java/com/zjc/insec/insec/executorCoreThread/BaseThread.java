@@ -1,7 +1,7 @@
 package com.zjc.insec.insec.executorCoreThread;
 
-import com.zjc.insec.insec.http.HttpClientUntil;
-import com.zjc.insec.insec.http.HttpProxy;
+import com.zjc.common.http.config.HttpClientUntil;
+import com.zjc.common.http.until.HttpProxy;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 

@@ -1,13 +1,11 @@
 package com.zjc.insec.insec.executorCoreThread;
-import com.zjc.insec.insec.db.RedisUntil;
-import com.zjc.insec.insec.entity.User;
-import com.zjc.insec.insec.http.HttpClientUntil;
-import com.zjc.insec.insec.http.HttpProxy;
-import com.zjc.insec.insec.http.UrlProxy;
-import com.zjc.insec.insec.until.InsecQueue;
-import com.zjc.insec.insec.until.ParseUntil;
-import com.zjc.insec.insec.until.StreamUntil;
-import org.apache.http.client.methods.HttpGet;
+
+import com.zjc.common.entity.User;
+import com.zjc.common.http.until.HttpProxy;
+import com.zjc.common.redis.RedisUntil;
+import com.zjc.common.until.InsecQueue;
+import com.zjc.common.until.ParseUntil;
+import com.zjc.common.until.StreamUntil;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +21,7 @@ public class UserRunnable extends BaseThread{
 
     public InsecQueue userQueue;
 
-    public InsecQueue topicQueue;
+    public InsecQueue articleQueue;
 
     public InsecQueue followeeQueue;
 
@@ -32,10 +30,10 @@ public class UserRunnable extends BaseThread{
 
     public static Logger logger= LogManager.getLogger(UserRunnable.class);
 
-    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue topicQueue,InsecQueue followeeQueue,Set history,HttpProxy httpProxy){
+    public UserRunnable(CloseableHttpClient closeableHttpClient,InsecQueue userQueue,InsecQueue articleQueue,InsecQueue followeeQueue,Set history,HttpProxy httpProxy){
         super(closeableHttpClient,httpProxy);
         this.userQueue=userQueue;
-        this.topicQueue=topicQueue;
+        this.articleQueue=articleQueue;
         this.followeeQueue=followeeQueue;
         this.history=history;
     }
@@ -54,8 +52,8 @@ public class UserRunnable extends BaseThread{
             try {
                 long start = System.currentTimeMillis();
                 endTime=start;
-                User user=ParseUntil.parseUser(closeableHttpClient, urlToken, httpGet);
-                topicQueue.push(urlToken);
+                User user= ParseUntil.parseUser(closeableHttpClient, urlToken, httpGet);
+                articleQueue.push(urlToken);
                 followeeQueue.push(urlToken);
                 history.add(urlToken);
                 RedisUntil.sadd(StreamUntil.serializa("user"),StreamUntil.serializeByString(user));

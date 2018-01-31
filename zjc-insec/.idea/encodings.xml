@@ -3,7 +3,9 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/article-insec" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-insec" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/parent-insec" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/topic-insec" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/user-insec" charset="UTF-8" />
   </component>
 </project>

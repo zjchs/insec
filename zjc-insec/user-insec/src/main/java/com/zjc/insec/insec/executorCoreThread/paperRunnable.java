@@ -1,8 +1,9 @@
 package com.zjc.insec.insec.executorCoreThread;
 
-import com.zjc.insec.insec.entity.Article;
-import com.zjc.insec.insec.http.HttpClientUntil;
-import com.zjc.insec.insec.until.ParseUntil;
+
+import com.zjc.common.entity.Article;
+import com.zjc.common.http.config.HttpClientUntil;
+import com.zjc.common.until.ParseUntil;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 

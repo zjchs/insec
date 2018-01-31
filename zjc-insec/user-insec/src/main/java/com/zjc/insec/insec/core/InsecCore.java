@@ -2,18 +2,17 @@ package com.zjc.insec.insec.core;
 
 
 
+import com.zjc.common.http.until.HttpProxy;
 import com.zjc.insec.insec.executorCoreThread.*;
-import com.zjc.insec.insec.http.HttpProxy;
-import com.zjc.insec.insec.http.UrlProxy;
-import com.zjc.insec.insec.until.InitUntil;
-import com.zjc.insec.insec.until.InsecQueue;
+
+import com.zjc.common.until.InitUntil;
+import com.zjc.common.until.InsecQueue;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -28,8 +27,6 @@ public class InsecCore {
 
     Logger logger= LogManager.getLogger(InsecCore.class);
 
-    @Autowired
-    public UrlProxy urlProxy;
 
     @Autowired
     public HttpProxy httpProxy;
@@ -82,20 +79,23 @@ public class InsecCore {
         InsecQueue userQueue=new InsecQueue();
         InsecQueue topicQueue=new InsecQueue();
         InsecQueue folowees=new InsecQueue();
+        InsecQueue articleQueue=new InsecQueue();
         InitUntil.initQueue(userQueue);
         Set<String> history=InitUntil.loadHistorySet();
         Executor executor=Executors.newFixedThreadPool(5);
         ScheduledExecutorService scheduledExecutorService=Executors.newScheduledThreadPool(2);
-        UserRunnable userRunnable= new UserRunnable(closeableHttpClient,userQueue,topicQueue,folowees,history,httpProxy);
+        UserRunnable userRunnable= new UserRunnable(closeableHttpClient,userQueue,articleQueue,folowees,history,httpProxy);
         FolloweeRunnable followeeRunnable=new FolloweeRunnable(closeableHttpClient,userQueue,folowees,history,httpProxy);
+        KafkaProducerRunnable kafkaProducerRunnable=new KafkaProducerRunnable(articleQueue);
         //TopicRunnable topicRunnable=new TopicRunnable(closeableHttpClient,topicQueue,httpProxy);
         executor.execute(userRunnable);
        // executor.execute(new TopicRunnable(closeableHttpClient,topicQueue));
         executor.execute(followeeRunnable);
         executor.execute(new LoadRunnable(userQueue));
+        executor.execute(kafkaProducerRunnable);
        // executor.execute(topicRunnable);
         MonitorRunnable monitorRunnable=new MonitorRunnable(userRunnable,followeeRunnable,executor);
-        scheduledExecutorService.scheduleAtFixedRate(monitorRunnable,1,1, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(monitorRunnable,30,30, TimeUnit.SECONDS);
         scheduledExecutorService.scheduleWithFixedDelay(new HistoryRunnable(history),5,5,TimeUnit.MINUTES);
     }
 

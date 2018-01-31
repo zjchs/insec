@@ -1,11 +1,8 @@
  package com.zjc.insec.insec.executorCoreThread;
 
-import com.zjc.insec.insec.http.HttpClientUntil;
-import com.zjc.insec.insec.http.HttpProxy;
-import com.zjc.insec.insec.http.UrlProxy;
-import com.zjc.insec.insec.until.InsecQueue;
-import com.zjc.insec.insec.until.ParseUntil;
-import org.apache.http.client.methods.HttpGet;
+import com.zjc.common.http.until.HttpProxy;
+import com.zjc.common.until.InsecQueue;
+import com.zjc.common.until.ParseUntil;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

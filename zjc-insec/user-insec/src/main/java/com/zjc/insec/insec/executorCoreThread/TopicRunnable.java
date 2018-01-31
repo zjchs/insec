@@ -1,13 +1,10 @@
 package com.zjc.insec.insec.executorCoreThread;
 
-import com.zjc.insec.insec.db.RedisUntil;
-import com.zjc.insec.insec.http.HttpClientUntil;
-import com.zjc.insec.insec.http.HttpProxy;
-import com.zjc.insec.insec.http.UrlProxy;
-import com.zjc.insec.insec.until.InsecQueue;
-import com.zjc.insec.insec.until.ParseUntil;
-import com.zjc.insec.insec.until.StreamUntil;
-import org.apache.http.client.methods.HttpGet;
+import com.zjc.common.http.until.HttpProxy;
+import com.zjc.common.redis.RedisUntil;
+import com.zjc.common.until.InsecQueue;
+import com.zjc.common.until.ParseUntil;
+import com.zjc.common.until.StreamUntil;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +40,7 @@ public class TopicRunnable extends BaseThread{
             this.httpGet=initUrlProxy(proxy);
             try {
                 long start = System.currentTimeMillis();
-                List<String> list=ParseUntil.parseTopics(closeableHttpClient, urlToken, httpGet);
+                List<String> list= ParseUntil.parseTopics(closeableHttpClient, urlToken, httpGet);
                 httpProxy.urlQueue.add(proxy);
                 Map<byte[],byte[]> hash=new HashMap<>();
                 hash.put(StreamUntil.serializa(urlToken),StreamUntil.serializeByString(list));

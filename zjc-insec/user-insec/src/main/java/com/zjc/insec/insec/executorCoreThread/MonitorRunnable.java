@@ -26,11 +26,11 @@ public class MonitorRunnable extends Thread{
     public void run() {
         try {
             long start = System.currentTimeMillis();
-            if (start - userRunnable.endTime > 120000) {
+            if (start - userRunnable.endTime > 60000) {
                 userRunnable.httpGet.abort();
                 logger.info("userRunnable Timeout interrupted"+followeeRunnable.httpGet.isAborted());
             }
-            if (start - followeeRunnable.endTime > 120000) {
+            if (start - followeeRunnable.endTime > 60000) {
                 followeeRunnable.httpGet.abort();
                 logger.info("followeeRunnable Timeout interrupted"+followeeRunnable.httpGet.isAborted());
             }

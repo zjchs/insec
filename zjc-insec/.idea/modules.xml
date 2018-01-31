@@ -3,8 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/article-insec/article-insec.iml" filepath="$PROJECT_DIR$/article-insec/article-insec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common-insec/common-insec.iml" filepath="$PROJECT_DIR$/common-insec/common-insec.iml" />
       <module fileurl="file://$PROJECT_DIR$/insec.iml" filepath="$PROJECT_DIR$/insec.iml" />
       <module fileurl="file://$PROJECT_DIR$/parent-insec/parent-insec.iml" filepath="$PROJECT_DIR$/parent-insec/parent-insec.iml" />
+      <module fileurl="file://$PROJECT_DIR$/topic-insec/topic-insec.iml" filepath="$PROJECT_DIR$/topic-insec/topic-insec.iml" />
       <module fileurl="file://$PROJECT_DIR$/user-insec/user-insec.iml" filepath="$PROJECT_DIR$/user-insec/user-insec.iml" />
     </modules>
   </component>

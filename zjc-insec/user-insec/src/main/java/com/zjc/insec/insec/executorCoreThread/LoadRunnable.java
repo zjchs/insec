@@ -1,6 +1,6 @@
 package com.zjc.insec.insec.executorCoreThread;
 
-import com.zjc.insec.insec.until.InsecQueue;
+import com.zjc.common.until.InsecQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

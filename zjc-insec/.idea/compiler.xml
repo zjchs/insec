@@ -7,14 +7,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="article-insec" />
+        <module name="common-insec" />
+        <module name="topic-insec" />
         <module name="user-insec" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="article-insec" target="1.8" />
+      <module name="common-insec" target="1.8" />
       <module name="insec" target="1.8" />
       <module name="kafka" target="1.8" />
       <module name="parent-insec" target="1.8" />
+      <module name="topic-insec" target="1.8" />
       <module name="user-insec" target="1.8" />
     </bytecodeTargetLevel>
   </component>

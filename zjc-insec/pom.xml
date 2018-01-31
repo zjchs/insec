@@ -15,11 +15,21 @@
 
 	<description>Demo project for Spring Boot</description>
 
+    <dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.zjc.insec</groupId>
+				<artifactId>common-insec</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<modules>
 		<module>user-insec</module>
 		<module>parent-insec</module>
 		<module>article-insec</module>
+		<module>common-insec</module>
 	</modules>
 
 
