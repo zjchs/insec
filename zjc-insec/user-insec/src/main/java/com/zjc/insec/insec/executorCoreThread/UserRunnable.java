@@ -1,6 +1,8 @@
 package com.zjc.insec.insec.executorCoreThread;
 
 import com.zjc.common.entity.User;
+import com.zjc.common.exception.InsecHttpException;
+import com.zjc.common.exception.InsecResultException;
 import com.zjc.common.http.until.HttpProxy;
 import com.zjc.common.redis.RedisUntil;
 import com.zjc.common.until.InsecQueue;
@@ -60,10 +62,13 @@ public class UserRunnable extends BaseThread{
                 httpProxy.urlQueue.add(proxy);
                 long end = System.currentTimeMillis();
                 logger.info("User-urlToken:" + urlToken + "   executeTime:" + (end - start)+" size="+userQueue.getSize());
-            } catch (Exception e) {
-                Thread.currentThread().isInterrupted();
+            } catch (InsecHttpException e) {
                 userQueue.push(urlToken);
                 logger.error("get User failed:" + e.toString());
+            }catch (InsecResultException e){
+                logger.error("get User failed:" + e.toString());
+            }catch (Exception e){
+
             }
         }
     }

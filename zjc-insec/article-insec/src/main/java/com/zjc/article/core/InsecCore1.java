@@ -33,15 +33,15 @@ public class InsecCore1 {
 
     public void start(){
          InsecQueue articleQueue=new InsecQueue();
-         InsecQueue topicQueue=new InsecQueue();
-         KafkaCounsumerRunnable kafkaCounsumerRunnable=new KafkaCounsumerRunnable(articleQueue,topicQueue);
-         ArticleRunnable articleRunnable=new ArticleRunnable(closeableHttpClient,httpProxy,articleQueue);
-        MonitorRunnable monitorRunnable=new MonitorRunnable(articleRunnable);
-        Executor executor=Executors.newFixedThreadPool(5);
-        executor.execute(kafkaCounsumerRunnable);
-        executor.execute(articleRunnable);
-        ScheduledExecutorService scheduledExecutorService=Executors.newScheduledThreadPool(2);
-        scheduledExecutorService.scheduleAtFixedRate(monitorRunnable,30,30,TimeUnit.SECONDS);
+         InsecQueue offsetQueue=new InsecQueue();
+         KafkaCounsumerRunnable kafkaCounsumerRunnable=new KafkaCounsumerRunnable(articleQueue,offsetQueue);
+         ArticleRunnable articleRunnable=new ArticleRunnable(closeableHttpClient,httpProxy,articleQueue,offsetQueue);
+         MonitorRunnable monitorRunnable=new MonitorRunnable(articleRunnable,kafkaCounsumerRunnable);
+         Executor executor=Executors.newFixedThreadPool(5);
+         executor.execute(kafkaCounsumerRunnable);
+         executor.execute(articleRunnable);
+         ScheduledExecutorService scheduledExecutorService=Executors.newScheduledThreadPool(2);
+         scheduledExecutorService.scheduleAtFixedRate(monitorRunnable,30,10,TimeUnit.SECONDS);
     }
 
 }

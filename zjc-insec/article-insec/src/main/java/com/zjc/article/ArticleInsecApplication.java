@@ -6,13 +6,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 @SpringBootApplication
-@ComponentScan({"com.zjc.common","com.zjc.article"})
+@ComponentScan({"com.zjc.common","com.zjc."})
 public class ArticleInsecApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext configurableApplicationContext=SpringApplication.run(ArticleInsecApplication.class, args);
 		InsecCore1 insecCore=(InsecCore1)configurableApplicationContext.getBean("insecCore1");
 		insecCore.start();
+
 	}
 }

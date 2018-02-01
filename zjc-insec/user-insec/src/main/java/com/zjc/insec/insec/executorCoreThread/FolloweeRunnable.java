@@ -1,5 +1,7 @@
  package com.zjc.insec.insec.executorCoreThread;
 
+import com.zjc.common.exception.InsecHttpException;
+import com.zjc.common.exception.InsecResultException;
 import com.zjc.common.http.until.HttpProxy;
 import com.zjc.common.until.InsecQueue;
 import com.zjc.common.until.ParseUntil;
@@ -56,10 +58,13 @@ public class FolloweeRunnable extends BaseThread {
                 httpProxy.urlQueue1.add(proxy);
                 long end = System.currentTimeMillis();
                 logger.info("Followee-urlToken:" + urlToken + "   executeTime:" + (end - start)+"  size="+followeeQueue.getSize());
-            } catch (Exception e) {
-                Thread.currentThread().isInterrupted();
+            } catch (InsecHttpException e) {
                 followeeQueue.push(urlToken);
                 logger.error("get Followee failed:" + e.toString());
+            }catch (InsecResultException e){
+                logger.error("get Followee failed:" + e.toString());
+            }catch (Exception e){
+
             }
         }
     }

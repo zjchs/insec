@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 
 import com.zjc.common.entity.Article;
 import com.zjc.common.entity.User;
+import com.zjc.common.exception.InsecHttpException;
+import com.zjc.common.exception.InsecResultException;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -57,15 +60,19 @@ public class ParseUntil {
                 closeableHttpResponse.close();
             }
             httpGet.abort();
-            throw e;
+            throw new InsecHttpException(e.toString());
         }finally {
             if(closeableHttpResponse!=null){
                 EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
         }
-        Gson gson = new Gson();
-        u = gson.fromJson(data, User.class);
+        try {
+            Gson gson = new Gson();
+            u = gson.fromJson(data, User.class);
+        }catch (Exception e){
+            throw  new InsecResultException(e.toString());
+        }
         long end=System.currentTimeMillis();
         logger.info("get user:"+(end-start));
         return u;
@@ -97,19 +104,23 @@ public class ParseUntil {
                 closeableHttpResponse.close();
             }
             httpGet.abort();
-            throw e;
+            throw new InsecHttpException(e.toString());
         }finally {
             if(closeableHttpResponse!=null){
                 EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
         }
-            JSONObject jsonObject = JSONObject.fromObject(data);
-            JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
+          try {
+              JSONObject jsonObject = JSONObject.fromObject(data);
+              JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
 
-            for (Object jsonObject2 : jsonObject1) {
-                folloeees.add(((JSONObject) jsonObject2).get("url_token").toString());
-            }
+              for (Object jsonObject2 : jsonObject1) {
+                  folloeees.add(((JSONObject) jsonObject2).get("url_token").toString());
+              }
+          }catch (Exception e){
+              throw new InsecResultException(e.toString());
+          }
 
         long end=System.currentTimeMillis();
         logger.info("get followees"+(end-start));
@@ -139,20 +150,27 @@ public class ParseUntil {
                 closeableHttpResponse.close();
             }
             httpGet.abort();
-            throw e;
+            throw new InsecHttpException(e.toString());
         }finally {
             if(closeableHttpResponse!=null){
                 EntityUtils.consume(closeableHttpResponse.getEntity());
                 closeableHttpResponse.close();
             }
         }
-        JSONObject jsonObject = JSONObject.fromObject(data);
-        JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
-        for (Object jsonObject2 : jsonObject1) {
-            Gson gson=new Gson();
-            Article a=(Article)gson.fromJson(((JSONObject)jsonObject2).toString(),Article.class);
-            a.setUrl_token(utlToken);
-            papers.add(a);
+        try {
+            JSONObject jsonObject = JSONObject.fromObject(data);
+            JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
+            if (jsonObject1.size() == 0) {
+                return null;
+            }
+            for (Object jsonObject2 : jsonObject1) {
+                Gson gson = new Gson();
+                Article a = (Article) gson.fromJson(((JSONObject) jsonObject2).toString(), Article.class);
+                a.setUrl_token(utlToken);
+                papers.add(a);
+            }
+        }catch (Exception e){
+            throw  new InsecResultException(e.toString());
         }
 
         long end=System.currentTimeMillis();
@@ -182,28 +200,32 @@ public class ParseUntil {
                     closeableHttpResponse.close();
                 }
                 httpGet.abort();
-                throw  e;
+                throw  new InsecHttpException(e.toString());
             }finally {
                 if(closeableHttpResponse!=null){
                     EntityUtils.consume(closeableHttpResponse.getEntity());
                     closeableHttpResponse.close();
                 }
             }
-            JSONObject jsonObject = JSONObject.fromObject(data);
-            JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
-            if(jsonObject1.size()==0){
-                break;
+            try {
+                JSONObject jsonObject = JSONObject.fromObject(data);
+                JSONArray jsonObject1 = (JSONArray) jsonObject.get("data");
+                if (jsonObject1.size() == 0) {
+                    break;
+                }
+                for (Object jsonObject2 : jsonObject1) {
+                    JSONObject jsonObject3 = (JSONObject) ((JSONObject) jsonObject2).get("topic");
+                    topics.add(jsonObject3.get("name").toString());
+                }
+                JSONObject jsonObject3 = (JSONObject) jsonObject.get("paging");
+                next1 = jsonObject3.get("next").toString();
+                pre += 20;
+                next = "https://www.zhihu.com/api/v4/members/" + urlToken + "/" +
+                        "following-topic-contributions?include=data%5B*%5D.topic.introduction&offset=" + pre + "&limit=" + (pre + 20);
+                //Thread.sleep(1000);
+            }catch (Exception e){
+                throw new InsecResultException(e.toString());
             }
-            for (Object jsonObject2 : jsonObject1) {
-                JSONObject jsonObject3=(JSONObject) ((JSONObject) jsonObject2).get("topic");
-                topics.add(jsonObject3.get("name").toString());
-            }
-            JSONObject jsonObject3 = (JSONObject) jsonObject.get("paging");
-            next1 = jsonObject3.get("next").toString();
-            pre+=20;
-            next="https://www.zhihu.com/api/v4/members/" +urlToken+"/"+
-                    "following-topic-contributions?include=data%5B*%5D.topic.introduction&offset="+pre+"&limit="+(pre+20);
-            //Thread.sleep(1000);
         }
         long end=System.currentTimeMillis();
         logger.info("get topics"+(end-start));

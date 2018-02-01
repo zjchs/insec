@@ -1,6 +1,5 @@
 package com.zjc.insec.insec.executorCoreThread;
 
-import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +13,6 @@ public class MonitorRunnable extends Thread{
     public static Logger logger= LogManager.getLogger(MonitorRunnable.class);
     UserRunnable userRunnable;
     FolloweeRunnable followeeRunnable;
-    TopicRunnable topicRunnable;
     Executor executor;
 
     public MonitorRunnable(UserRunnable userRunnable,FolloweeRunnable followeeRunnable,Executor executor){

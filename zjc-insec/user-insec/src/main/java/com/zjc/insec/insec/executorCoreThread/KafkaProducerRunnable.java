@@ -33,9 +33,10 @@ public class KafkaProducerRunnable extends Thread{
                         for(int b=0;b<50;b++){
                             list.add(articleQueue.pop());
                         }
+                        list.add("commit");
                         long start=System.currentTimeMillis();
                         ProducerRecord<String, Object> record = new ProducerRecord<String, Object>("article", null, list);
-                    ProducerRecord<String, Object> record1 = new ProducerRecord<String, Object>("topic", null, list);
+                        ProducerRecord<String, Object> record1 = new ProducerRecord<String, Object>("topic", null, list);
                         kafkaProducer.send(record).get();
                         kafkaProducer.send(record1).get();
                         long end=System.currentTimeMillis();
