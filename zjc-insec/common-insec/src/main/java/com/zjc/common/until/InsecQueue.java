@@ -29,4 +29,7 @@ public class InsecQueue {
     public void pushFirst(String aim){
         concurrentLinkedDeque.addFirst(aim);
     }
+    public void clear(){
+        concurrentLinkedDeque.clear();
+    }
 }

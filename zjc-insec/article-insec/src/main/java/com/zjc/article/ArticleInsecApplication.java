@@ -16,6 +16,5 @@ public class ArticleInsecApplication {
 		ConfigurableApplicationContext configurableApplicationContext=SpringApplication.run(ArticleInsecApplication.class, args);
 		InsecCore1 insecCore=(InsecCore1)configurableApplicationContext.getBean("insecCore1");
 		insecCore.start();
-
 	}
 }

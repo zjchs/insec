@@ -5,6 +5,7 @@ import com.zjc.article.ExecuteThread.ArticleRunnable;
 import com.zjc.article.ExecuteThread.KafkaCounsumerRunnable;
 import com.zjc.article.ExecuteThread.MonitorRunnable;
 import com.zjc.common.http.until.HttpProxy;
+import com.zjc.common.kafka.listener.ConsumerListener;
 import com.zjc.common.until.InsecQueue;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,8 @@ public class InsecCore1 {
     public void start(){
          InsecQueue articleQueue=new InsecQueue();
          InsecQueue offsetQueue=new InsecQueue();
-         KafkaCounsumerRunnable kafkaCounsumerRunnable=new KafkaCounsumerRunnable(articleQueue,offsetQueue);
+         ConsumerListener consumerListener=new ConsumerListener(offsetQueue);
+         KafkaCounsumerRunnable kafkaCounsumerRunnable=new KafkaCounsumerRunnable(articleQueue,offsetQueue,consumerListener);
          ArticleRunnable articleRunnable=new ArticleRunnable(closeableHttpClient,httpProxy,articleQueue,offsetQueue);
          MonitorRunnable monitorRunnable=new MonitorRunnable(articleRunnable,kafkaCounsumerRunnable);
          Executor executor=Executors.newFixedThreadPool(5);

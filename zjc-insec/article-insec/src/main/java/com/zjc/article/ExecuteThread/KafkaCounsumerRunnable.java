@@ -1,6 +1,7 @@
 package com.zjc.article.ExecuteThread;
 
 import com.zjc.common.kafka.consumer.KafkaConsumerConfig;
+import com.zjc.common.kafka.listener.ConsumerListener;
 import com.zjc.common.until.InsecQueue;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -25,11 +26,11 @@ public class KafkaCounsumerRunnable extends Thread {
     long endtime=System.currentTimeMillis();
     public static long currentoffset=0;
     public static boolean iscommit=false;
-    public  KafkaCounsumerRunnable(InsecQueue articleQueue,InsecQueue offsetQueue){
+    public  KafkaCounsumerRunnable(InsecQueue articleQueue, InsecQueue offsetQueue, ConsumerListener consumerListener){
         this.articleQueue=articleQueue;
         this.offsetQueue=offsetQueue;
         kafkaConsumer= KafkaConsumerConfig.getKafkaConsumer();
-        kafkaConsumer.subscribe(Arrays.asList("article"));
+        kafkaConsumer.subscribe(Arrays.asList("article"),consumerListener);
     }
     public void run(){
        while(true) {
@@ -43,16 +44,16 @@ public class KafkaCounsumerRunnable extends Thread {
                for (ConsumerRecord consumerRecord : consumerRecords) {
                    articleQueue.pushAll((List) consumerRecord.value());
                    offsetQueue.push(consumerRecord.offset()+"");
-                   logger.info("article-kafka-consumer:" + ((List) consumerRecord.value()).size());
+                   logger.info("article-kafka-consumer:" + ((List) consumerRecord.value()).size()+"  offset:"+consumerRecord.offset());
                }
            }catch(Exception e){
-                logger.error(e.toString());
+                logger.info(e.toString());
            }
        }
     }
     public void commitOffset(){
         TopicPartition topicPartition=new TopicPartition("article",0);
         kafkaConsumer.commitSync(Collections.singletonMap(topicPartition,new OffsetAndMetadata(currentoffset+1)));
-        System.out.println("ok");
+        logger.info("commit offset:"+currentoffset);
     }
 }

@@ -34,6 +34,15 @@
             <SizeBasedTriggeringPolicy size="50MB"/>
         </RollingFile>
 
+        <RollingFile name="articleKafkaMonitor" fileName="E:\\articleKafkaMonitor.log" filePattern="log/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter  level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="50MB"/>
+        </RollingFile>
+
         <File name="file" fileName="E:\\articleError.log" append="true" >
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %M - %msg%xEx%n"/>
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -51,6 +60,10 @@
 
         <logger name="com.zjc.article.ExecuteThread.MonitorRunnable" level="info">
             <appender-ref ref="monitor"/>
+        </logger>
+
+        <logger name="com.zjc.common.kafka.listener.ConsumerListener" level="info">
+            <appender-ref ref="articleKafkaMonitor"/>
         </logger>
 
         <root level="info">

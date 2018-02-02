@@ -2,7 +2,7 @@ package com.zjc.topic.core;
 
 
 import com.zjc.common.http.until.HttpProxy;
-import com.zjc.common.until.InitUntil;
+import com.zjc.common.kafka.listener.ConsumerListener;
 import com.zjc.common.until.InsecQueue;
 import com.zjc.topic.executorThread.KafkaCounsumerRunnable;
 import com.zjc.topic.executorThread.MonitorRunnable;
@@ -37,9 +37,10 @@ public class InsecCore {
     public void start(){
          InsecQueue topicQueue=new InsecQueue();
          InsecQueue offsetQueue=new InsecQueue();
+         ConsumerListener consumerListener=new ConsumerListener(offsetQueue);
          Executor executor= Executors.newFixedThreadPool(3);
          ScheduledExecutorService scheduledExecutorService=Executors.newScheduledThreadPool(2);
-         KafkaCounsumerRunnable kafkaCounsumerRunnable=new KafkaCounsumerRunnable(topicQueue,offsetQueue);
+         KafkaCounsumerRunnable kafkaCounsumerRunnable=new KafkaCounsumerRunnable(topicQueue,offsetQueue,consumerListener);
          TopicRunnable topicRunnable=new TopicRunnable(closeableHttpClient,topicQueue,httpProxy,offsetQueue);
          MonitorRunnable monitorRunnable=new MonitorRunnable(topicRunnable,kafkaCounsumerRunnable);
          executor.execute(kafkaCounsumerRunnable);
